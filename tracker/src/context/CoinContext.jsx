@@ -14,12 +14,37 @@ const CoinContextProvider = (props) => {
     const fetchAllCoins = async () => {
         const options = {
             method: 'GET'
+        };
+        try {
+            const res = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency.name}`, options);
+            const data = await res.json();
+            setAllCoins(data);
+    
+            // Send the fetched data to the backend
+            await fetch('http://localhost:8082/save-coins', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+    
+        } catch (err) {
+            console.error(err);
         }
-        fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency.name}`, options)
-        .then(res => res.json())
-        .then(res => setAllCoins(res))
-        .catch(err => console.error(err));
-    }
+    };
+    
+
+    // const fetchAllCoins = async () => {
+        
+    //     const options = {
+    //         method: 'GET'
+    //     }
+    //     fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency.name}`, options)
+    //     .then(res => res.json())
+    //     .then(res => setAllCoins(res))
+    //     .catch(err => console.error(err));
+    // }
     // console.log(fetchAllCoins());
 
     useEffect(() => {
