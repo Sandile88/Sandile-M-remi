@@ -4,7 +4,7 @@ import lottery from "./contract/Lottery.json";
 import { useState } from "react";
 import Web3 from 'web3';
 
-const CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+const CONTRACT_ADDRESS = "0x8958f1faD7A69dF00bAFFA013Dc3f88caAFCd188";
 
 export default function Home() {
   const [web3, setWeb3] = useState(null);
@@ -20,8 +20,6 @@ export default function Home() {
     if (!window.ethereum) {
       alert("Please install Metamask to use this app.");
       return;
-    } else {
-      console.error('Web3 not found');
     }
 
     try {
@@ -42,8 +40,11 @@ export default function Home() {
         //   lottery.abi,
         //   deployedNetwork && deployedNetwork.address
         // );
+
         const instance = new web3Instance.eth.Contract(lottery.abi, CONTRACT_ADDRESS);
         setContract(instance);
+
+        console.log("instance", instance);
 
         const playersList = await instance.methods.getPlayers().call();
         setPlayers(playersList);
@@ -66,6 +67,10 @@ export default function Home() {
   };
 
   const enterPlayer = async () => {
+    console.log("web3:", web3);
+    console.log("contract:", contract);
+    console.log("accounts:", accounts);
+
     if (!contract || !web3 || accounts.length === 0) {
     alert("Please connect your wallet first.");
     return;
@@ -74,7 +79,7 @@ export default function Home() {
     try {
       await contract.methods.enter().send({
         from: accounts[0],
-        value: web3.utils.toWei("0.00001", "ether"),
+        value: web3.utils.toWei("0.00002", "ether"),
       });
       getAllPlayers();
     } catch (error) {
